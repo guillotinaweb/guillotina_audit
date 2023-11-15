@@ -71,10 +71,13 @@ class AuditUtility:
         if IObjectModifiedEvent.providedBy(event):
             document["action"] = "modified"
             document["creation_date"] = obj.modification_date
-            document["payload"] = json.dumps(event.payload)
+            if self._settings.get("save_payload", False) is True:
+                document["payload"] = json.dumps(event.payload)
         elif IObjectAddedEvent.providedBy(event):
             document["action"] = "added"
             document["creation_date"] = obj.creation_date
+            if self._settings.get("save_payload", False) is True:
+                document["payload"] = json.dumps(event.payload)
         elif IObjectRemovedEvent.providedBy(event):
             document["action"] = "removed"
             document["creation_date"] = datetime.datetime.now(timezone.utc)

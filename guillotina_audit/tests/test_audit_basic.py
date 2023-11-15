@@ -24,7 +24,9 @@ async def test_audit_basic(guillotina_es):
     resp = await audit_utility.async_es.indices.get_mapping(index="audit")
     assert "path" in resp["audit"]["mappings"]["properties"]
     response, status = await guillotina_es(
-        "POST", "/db/guillotina/", data=json.dumps({"@type": "Item", "id": "foo_item"})
+        "POST",
+        "/db/guillotina/",
+        data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
     )
     assert status == 201
     await asyncio.sleep(2)
@@ -34,10 +36,12 @@ async def test_audit_basic(guillotina_es):
     assert resp["hits"]["hits"][0]["_source"]["action"] == "added"
     assert resp["hits"]["hits"][0]["_source"]["type_name"] == "Container"
     assert resp["hits"]["hits"][0]["_source"]["creator"] == "root"
+    assert "title" in resp["hits"]["hits"][0]["_source"]["payload"]
 
     assert resp["hits"]["hits"][1]["_source"]["action"] == "added"
     assert resp["hits"]["hits"][1]["_source"]["type_name"] == "Item"
     assert resp["hits"]["hits"][1]["_source"]["creator"] == "root"
+    assert "title" in resp["hits"]["hits"][1]["_source"]["payload"]
 
     response, status = await guillotina_es("DELETE", "/db/guillotina/foo_item")
     await asyncio.sleep(2)
