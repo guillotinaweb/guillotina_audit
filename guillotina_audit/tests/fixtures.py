@@ -16,11 +16,17 @@ def base_settings_configurator(settings):
         settings["applications"] = []
     settings["applications"].append("guillotina")
     settings["applications"].append("guillotina_audit")
-
     settings["audit"] = {
         "connection_settings": {
             "hosts": [f"{annotations['elasticsearch']['host']}"]
         }  # noqa
+    }
+    settings["load_utilities"] = {
+        "audit": {
+            "provides": "guillotina_audit.interfaces.IAuditUtility",
+            "factory": "guillotina_audit.utility.AuditUtility",
+            "settings": {"index_name": "audit", "save_payload": True},
+        }
     }
 
 
