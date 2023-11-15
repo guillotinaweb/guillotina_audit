@@ -12,9 +12,7 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_audit_basic(guillotina_es):
-    response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
+    response, status = await guillotina_es("POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"}))
     assert status == 200
     audit_utility = query_utility(IAuditUtility)
     # Let's check the index has been created
@@ -46,20 +44,14 @@ async def test_audit_basic(guillotina_es):
     resp, status = await guillotina_es("GET", "/db/guillotina/@audit?action=removed")
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
-    resp, status = await guillotina_es(
-        "GET", "/db/guillotina/@audit?action=removed&type_name=Item"
-    )
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit?action=removed&type_name=Item")
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
-    resp, status = await guillotina_es(
-        "GET", "/db/guillotina/@audit?action=added&type_name=Item"
-    )
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit?action=added&type_name=Item")
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
     assert resp["hits"]["hits"][0]["_source"]["type_name"] == "Item"
-    resp, status = await guillotina_es(
-        "GET", "/db/guillotina/@audit?action=added&type_name=Container"
-    )
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit?action=added&type_name=Container")
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
     assert resp["hits"]["hits"][0]["_source"]["type_name"] == "Container"

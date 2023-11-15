@@ -1,15 +1,18 @@
 from guillotina import testing
 from guillotina.tests.fixtures import _update_from_pytest_markers
 
-import json
 import os
 import pytest
+import json
 
 
 ELASTICSEARCH = os.environ.get("ELASTICSEARCH", "True")
 
-annotations = {"elasticsearch": {"host": "localhost:9200"}}
-
+annotations = {
+    "elasticsearch": {
+        "host": "localhost:9200"
+    }
+}
 
 def base_settings_configurator(settings):
     if "applications" not in settings:
@@ -18,9 +21,7 @@ def base_settings_configurator(settings):
     settings["applications"].append("guillotina_audit")
 
     settings["audit"] = {
-        "connection_settings": {
-            "hosts": [f"{annotations['elasticsearch']['host']}"]
-        }  # noqa
+        "connection_settings": {"hosts": [f"{annotations['elasticsearch']['host']}"]}  # noqa
     }
 
 
@@ -41,8 +42,6 @@ def elasticsearch_fixture(es):
 
 @pytest.fixture(scope="function")
 async def guillotina_es(elasticsearch_fixture, guillotina):
-    response, status = await guillotina(
-        "POST", "/db/", data=json.dumps({"@type": "Container", "id": "guillotina"})
-    )
+    response, status = await guillotina("POST", "/db/", data=json.dumps({"@type": "Container", "id": "guillotina"}))
     assert status == 200
     yield guillotina
