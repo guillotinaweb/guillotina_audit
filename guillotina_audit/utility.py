@@ -30,7 +30,10 @@ class AuditUtility:
         )
 
     async def create_index(self):
-        settings = {"settings": self.default_settings(), "mappings": self.default_mappings()}
+        settings = {
+            "settings": self.default_settings(),
+            "mappings": self.default_mappings(),
+        }
         try:
             await self.async_es.indices.create(self.index, settings)
         except RequestError:
@@ -40,7 +43,9 @@ class AuditUtility:
         return {
             "analysis": {
                 "analyzer": {"path_analyzer": {"tokenizer": "path_tokenizer"}},
-                "tokenizer": {"path_tokenizer": {"type": "path_hierarchy", "delimiter": "/"}},
+                "tokenizer": {
+                    "path_tokenizer": {"type": "path_hierarchy", "delimiter": "/"}
+                },
                 "filter": {},
                 "char_filter": {},
             }
@@ -94,7 +99,9 @@ class AuditUtility:
                 ):
                     field_parsed = field.split("__")[0]
                     operator = field.split("__")[1]
-                    query["query"]["bool"]["must"].append({"range": {field_parsed: {operator: value}}})
+                    query["query"]["bool"]["must"].append(
+                        {"range": {field_parsed: {operator: value}}}
+                    )
                 else:
                     query["query"]["bool"]["must"].append({"match": {field: value}})
         return await self.async_es.search(index=self.index, body=query)
