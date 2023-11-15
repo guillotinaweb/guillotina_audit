@@ -49,7 +49,7 @@ guillotina config file
 .. code-block:: yaml
 
     audit:
-      index_name: "guillotina-"
+      index_name: "audit"
       connection_settings:
         hosts:
           - "127.0.0.1:9200"
@@ -65,7 +65,6 @@ Guillotina_audit comes as an addon for guillotina. To install it in your site:
 
 "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
 
-{}
 
 Uninstall on a site
 -------------------
@@ -73,5 +72,3 @@ Uninstall on a site
 "DELETE", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
 
 Uninstalling will not delete the log entries created in ES.
-
-{}
