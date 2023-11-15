@@ -6,7 +6,7 @@ app_settings = {
         "audit": {
             "provides": "guillotina_audit.interfaces.IAuditUtility",
             "factory": "guillotina_audit.utility.AuditUtility",
-            "settings": {"index_name": "audit"},
+            "settings": {"index_name": "audit", "save_payload": False},
         }
     }
 }

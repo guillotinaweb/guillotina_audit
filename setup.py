@@ -10,6 +10,7 @@ test_requires = [
     "coverage",
     "pytest-cov",
     "pytest-docker-fixtures[pg]>=1.3.0",
+    "asyncpg==0.24.0",
     "docker>=5.0.0,<6.0.0"
 ]
 
@@ -38,7 +39,8 @@ setup(
     packages=find_packages(exclude=["ez_setup"]),
     install_requires=[
         "guillotina>=6.4.3",
-        "elasticsearch[async]>=7.8.0,<8.0.0"
+        "elasticsearch[async]>=7.8.0,<8.0.0",
+        "zope.interface==5.1.0"  # TODO: remove once guillotina has solved this
     ],
     tests_require=test_requires,
     extras_require={"test": test_requires},
