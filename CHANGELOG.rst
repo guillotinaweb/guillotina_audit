@@ -1,7 +1,13 @@
+1.0.4
+-----
+
+- Changing requirement of guillotina
+
+
 1.0.3 (2023-11-16)
 ------------------
 
-- Changing requirement of guillotina
+- Adding try except clause in subscribers
 
 
 1.0.2 (2023-11-15)
