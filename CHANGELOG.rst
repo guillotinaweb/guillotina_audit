@@ -1,7 +1,7 @@
 1.0.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Changing requirement of guillotina
 
 
 1.0.2 (2023-11-15)

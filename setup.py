@@ -38,7 +38,7 @@ setup(
     package_data={"": ["*.txt", "*.rst"], "guillotina_audit": ["py.typed"]},
     packages=find_packages(exclude=["ez_setup"]),
     install_requires=[
-        "guillotina>=6.4.3",
+        "guillotina>=6.0.0a16",
         "elasticsearch[async]>=7.8.0,<8.0.0",
         "zope.interface==5.1.0"  # TODO: remove once guillotina has solved this
     ],
