@@ -19,9 +19,15 @@ logger = logging.getLogger("guillotina_audit")
 )  # after indexing
 async def audit_object_added(obj, event):
     try:
-        audit = query_utility(IAuditUtility)
-        audit.log_entry(obj, event)
+        if event.__providedBy__(IObjectDuplicatedEvent) is True:
+            pass
+        elif event.__providedBy__(IObjectMovedEvent) is True:
+            pass
+        elif event.__providedBy__(IObjectAddedEvent) is True:
+            audit = query_utility(IAuditUtility)
+            audit.log_entry(obj, event)
     except Exception:
+        __import__("pdb").set_trace()
         logger.error("Error adding audit", exc_info=True)
 
 

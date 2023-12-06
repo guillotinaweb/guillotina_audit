@@ -69,13 +69,20 @@ class AuditUtility:
         }
 
     def log_wildcard(self, payload: Document):
-        coroutine = self.async_es.index(index=self.index, body=payload)
+        coroutine = self.async_es.index(index=self.index, body=payload.dict(exclude_unset=True))
         asyncio.create_task(coroutine)
 
     def log_entry(self, obj, event):
         document = {}
         user = get_authenticated_user()
-        if IObjectModifiedEvent.providedBy(event):
+
+        if IObjectDuplicatedEvent.providedBy(event):
+            document["action"] = "duplicated"
+            document["creation_date"] = datetime.datetime.now(timezone.utc)
+        elif IObjectMovedEvent.providedBy(event):
+            document["action"] = "moved"
+            document["creation_date"] = datetime.datetime.now(timezone.utc)
+        elif IObjectModifiedEvent.providedBy(event):
             document["action"] = "modified"
             document["creation_date"] = obj.modification_date
             if self._settings.get("save_payload", False) is True:
@@ -87,12 +94,6 @@ class AuditUtility:
                 document["payload"] = json.dumps(event.payload)
         elif IObjectRemovedEvent.providedBy(event):
             document["action"] = "removed"
-            document["creation_date"] = datetime.datetime.now(timezone.utc)
-        elif IObjectMovedEvent.providedBy(event):
-            document["action"] = "moved"
-            document["creation_date"] = datetime.datetime.now(timezone.utc)
-        elif IObjectDuplicatedEvent.providedBy(event):
-            document["action"] = "duplicated"
             document["creation_date"] = datetime.datetime.now(timezone.utc)
         document["path"] = get_content_path(obj)
         document["creator"] = user.id
