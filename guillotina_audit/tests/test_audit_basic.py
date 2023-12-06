@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from guillotina.component import query_utility
 from guillotina_audit.interfaces import IAuditUtility
+from guillotina_audit.models import Document
 
 import asyncio
 import json
@@ -84,3 +85,23 @@ async def test_audit_basic(guillotina_es):
     )  # noqa
     assert len(resp["hits"]["hits"]) == 0
     assert status == 200
+
+
+async def test_audit_wildcard(guillotina_es):
+    response, status = await guillotina_es(
+        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+    audit_utility = query_utility(IAuditUtility)
+
+    payload = Document(action="added", type_name="Fullscreen")
+    audit_utility.log_wildcard(payload)
+    await asyncio.sleep(2)
+
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=added&type_name=Fullscreen",
+    )  # noqa
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 1
