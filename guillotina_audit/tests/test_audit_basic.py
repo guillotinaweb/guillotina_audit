@@ -89,7 +89,9 @@ async def test_audit_basic(guillotina_es):
     response, status = await guillotina_es(
         "POST",
         "/db/guillotina/",
-        data=json.dumps({"@type": "Folder", "id": "foo_folder1", "title": "Foo Folder"}),
+        data=json.dumps(
+            {"@type": "Folder", "id": "foo_folder1", "title": "Foo Folder"}
+        ),
     )
     assert status == 201
 
@@ -143,7 +145,14 @@ async def test_audit_wildcard(guillotina_es):
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
 
-    payload = AuditDocument(action="added", type_name="Click", path="/foopath", payload={"hola": "hola"}, creator="creator", uuid="12345")
+    payload = AuditDocument(
+        action="added",
+        type_name="Click",
+        path="/foopath",
+        payload={"hola": "hola"},
+        creator="creator",
+        uuid="12345",
+    )
     audit_utility.log_wildcard(payload)
     await asyncio.sleep(2)
 
