@@ -6,8 +6,11 @@ from guillotina import app_settings
 from guillotina.interfaces import IObjectAddedEvent
 from guillotina.interfaces import IObjectModifiedEvent
 from guillotina.interfaces import IObjectRemovedEvent
+from guillotina.interfaces import IObjectMovedEvent
+from guillotina.interfaces import IObjectDuplicatedEvent
 from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
+from guillotina_audit.models import Document
 
 import asyncio
 import datetime
@@ -65,10 +68,21 @@ class AuditUtility:
             },
         }
 
+    def log_wildcard(self, payload: Document):
+        coroutine = self.async_es.index(index=self.index, body=payload.dict(exclude_unset=True))
+        asyncio.create_task(coroutine)
+
     def log_entry(self, obj, event):
         document = {}
         user = get_authenticated_user()
-        if IObjectModifiedEvent.providedBy(event):
+
+        if IObjectDuplicatedEvent.providedBy(event):
+            document["action"] = "duplicated"
+            document["creation_date"] = datetime.datetime.now(timezone.utc)
+        elif IObjectMovedEvent.providedBy(event):
+            document["action"] = "moved"
+            document["creation_date"] = datetime.datetime.now(timezone.utc)
+        elif IObjectModifiedEvent.providedBy(event):
             document["action"] = "modified"
             document["creation_date"] = obj.modification_date
             if self._settings.get("save_payload", False) is True:

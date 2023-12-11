@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from guillotina.component import query_utility
 from guillotina_audit.interfaces import IAuditUtility
+from guillotina_audit.models import Document
 
 import asyncio
 import json
@@ -84,3 +85,71 @@ async def test_audit_basic(guillotina_es):
     )  # noqa
     assert len(resp["hits"]["hits"]) == 0
     assert status == 200
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/",
+        data=json.dumps({"@type": "Folder", "id": "foo_folder1", "title": "Foo Folder"}),
+    )
+    assert status == 201
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/foo_folder1/@duplicate",
+        data=json.dumps({"destination": "/", "new_id": "foo_folder2"}),
+    )
+    assert status == 200
+
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=duplicated",
+    )  # noqa
+    assert len(resp["hits"]["hits"]) == 1
+    assert status == 200
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/foo_folder2/@move",
+        data=json.dumps({"destination": "/foo_folder1"}),
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=moved",
+    )  # noqa
+    assert len(resp["hits"]["hits"]) == 1
+    assert status == 200
+
+
+async def test_audit_wildcard(guillotina_es):
+    response, status = await guillotina_es(
+        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+    audit_utility = query_utility(IAuditUtility)
+
+    payload = Document(action="added", type_name="Fullscreen")
+    audit_utility.log_wildcard(payload)
+    await asyncio.sleep(2)
+
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=added&type_name=Fullscreen",
+    )  # noqa
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 1
+
+    payload = Document(action="added", type_name="Click", path="/foopath", payload={"hola": "hola"}, creator="creator", uuid="12345")
+    audit_utility.log_wildcard(payload)
+    await asyncio.sleep(2)
+
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=added&type_name=Click",
+    )  # noqa
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 1

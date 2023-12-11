@@ -39,6 +39,7 @@ setup(
     packages=find_packages(exclude=["ez_setup"]),
     install_requires=[
         "guillotina>=6.0.0a16",
+        "pydantic",
         "elasticsearch[async]>=7.8.0,<8.0.0",
         "zope.interface==5.1.0"  # TODO: remove once guillotina has solved this
     ],
