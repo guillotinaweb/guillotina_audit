@@ -2,7 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from guillotina.component import query_utility
 from guillotina_audit.interfaces import IAuditUtility
-from guillotina_audit.models import Document
+from guillotina_audit.models import AuditDocument
 
 import asyncio
 import json
@@ -132,7 +132,7 @@ async def test_audit_wildcard(guillotina_es):
     await asyncio.sleep(2)
     audit_utility = query_utility(IAuditUtility)
 
-    payload = Document(action="added", type_name="Fullscreen")
+    payload = AuditDocument(action="added", type_name="Fullscreen")
     audit_utility.log_wildcard(payload)
     await asyncio.sleep(2)
 
@@ -143,13 +143,24 @@ async def test_audit_wildcard(guillotina_es):
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
 
-    payload = Document(action="added", type_name="Click", path="/foopath", payload={"hola": "hola"}, creator="creator", uuid="12345")
+    payload = AuditDocument(action="added", type_name="Click", path="/foopath", payload={"hola": "hola"}, creator="creator", uuid="12345")
     audit_utility.log_wildcard(payload)
     await asyncio.sleep(2)
 
     resp, status = await guillotina_es(
         "GET",
         "/db/guillotina/@audit?action=added&type_name=Click",
+    )  # noqa
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 1
+
+    payload = AuditDocument(action="CustomAction")
+    audit_utility.log_wildcard(payload)
+    await asyncio.sleep(2)
+
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=CustomAction",
     )  # noqa
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1

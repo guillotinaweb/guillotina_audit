@@ -1,10 +1,10 @@
 from guillotina import configure
 from guillotina.component import query_utility
 from guillotina.interfaces import IObjectAddedEvent
-from guillotina.interfaces import IObjectModifiedEvent
-from guillotina.interfaces import IObjectRemovedEvent
-from guillotina.interfaces import IObjectMovedEvent
 from guillotina.interfaces import IObjectDuplicatedEvent
+from guillotina.interfaces import IObjectModifiedEvent
+from guillotina.interfaces import IObjectMovedEvent
+from guillotina.interfaces import IObjectRemovedEvent
 from guillotina.interfaces import IResource
 from guillotina_audit.interfaces import IAuditUtility
 

@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
         database: ["DUMMY", "postgres"]
     env:
       DATABASE: ${{ matrix.database }}
@@ -32,7 +32,7 @@ jobs:
           flake8 guillotina_audit --config=setup.cfg
           isort -c -rc guillotina_audit
           black --check --verbose guillotina_audit
-
+          
       # Run tests
       - name: Run tests
         run: |

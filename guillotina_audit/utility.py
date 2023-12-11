@@ -4,13 +4,13 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
 from guillotina.interfaces import IObjectAddedEvent
-from guillotina.interfaces import IObjectModifiedEvent
-from guillotina.interfaces import IObjectRemovedEvent
-from guillotina.interfaces import IObjectMovedEvent
 from guillotina.interfaces import IObjectDuplicatedEvent
+from guillotina.interfaces import IObjectModifiedEvent
+from guillotina.interfaces import IObjectMovedEvent
+from guillotina.interfaces import IObjectRemovedEvent
 from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
-from guillotina_audit.models import Document
+from guillotina_audit.models import AuditDocument
 
 import asyncio
 import datetime
@@ -68,7 +68,7 @@ class AuditUtility:
             },
         }
 
-    def log_wildcard(self, payload: Document):
+    def log_wildcard(self, payload: AuditDocument):
         coroutine = self.async_es.index(index=self.index, body=payload.dict(exclude_unset=True))
         asyncio.create_task(coroutine)
 
