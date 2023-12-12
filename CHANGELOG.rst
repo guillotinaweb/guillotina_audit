@@ -1,3 +1,10 @@
+1.0.5 (2023-12-12)
+------------------
+
+- Adding log_entry method to the utility. Now customized documents can
+  be indexed
+
+  
 1.0.4 (2023-11-16)
 ------------------
 
