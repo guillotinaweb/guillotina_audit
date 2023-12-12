@@ -1,4 +1,4 @@
-name: guillotina_elasticsearch
+name: guillotina_audit
 
 on: [push]
 
