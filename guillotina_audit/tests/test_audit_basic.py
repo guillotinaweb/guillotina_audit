@@ -173,3 +173,22 @@ async def test_audit_wildcard(guillotina_es):
     )  # noqa
     assert status == 200
     assert len(resp["hits"]["hits"]) == 1
+    assert "creation_date" in resp["hits"]["hits"][0]["_source"]
+
+    payload = AuditDocument(
+        action="added",
+        creation_date="2023-05-12T21:45:32",
+        type_name="AnotherFullscreen",
+    )
+    audit_utility.log_wildcard(payload)
+    await asyncio.sleep(2)
+
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?type_name=AnotherFullscreen",
+    )  # noqa
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 1
+    assert resp["hits"]["hits"][0]["_source"]["creation_date"].startswith(
+        "2023-05-12T21:45:32"
+    )

@@ -27,7 +27,6 @@ async def audit_object_added(obj, event):
             audit = query_utility(IAuditUtility)
             audit.log_entry(obj, event)
     except Exception:
-        __import__("pdb").set_trace()
         logger.error("Error adding audit", exc_info=True)
 
 

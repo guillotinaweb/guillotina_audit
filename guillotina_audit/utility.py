@@ -70,7 +70,7 @@ class AuditUtility:
 
     def log_wildcard(self, payload: AuditDocument):
         coroutine = self.async_es.index(
-            index=self.index, body=payload.dict(exclude_unset=True)
+            index=self.index, body=payload.dict(exclude_none=True)
         )
         asyncio.create_task(coroutine)
 
