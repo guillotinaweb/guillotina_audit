@@ -8,7 +8,7 @@
 ------------------
 
 - Changing date by datetime in models.
-- Fizing creation_date was not indexed when login wildcards
+- Fixing creation_date was not indexed when login wildcards
 
 
 1.0.5 (2023-12-12)
