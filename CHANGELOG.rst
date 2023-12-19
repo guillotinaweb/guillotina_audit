@@ -1,4 +1,4 @@
-1.0.6 (unreleased)
+1.0.6 (2023-12-19)
 ------------------
 
 - Changing date by datetime in models.
