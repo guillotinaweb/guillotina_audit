@@ -1,7 +1,8 @@
-1.0.7 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Supporting ES version 7 and 8
+- By default the async elasticsearch version is 8.12
 
 
 1.0.6 (2023-12-19)

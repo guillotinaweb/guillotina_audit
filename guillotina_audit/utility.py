@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timezone
 from elasticsearch import AsyncElasticsearch
+from elasticsearch import BadRequestError
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
 from guillotina.interfaces import IObjectAddedEvent
@@ -29,17 +30,19 @@ class AuditUtility:
 
     async def initialize(self, app):
         self.async_es = AsyncElasticsearch(
-            loop=self.loop, **app_settings.get("audit", {}).get("connection_settings")
+            **app_settings.get("audit", {}).get("connection_settings")
         )
 
     async def create_index(self):
-        settings = {
-            "settings": self.default_settings(),
-            "mappings": self.default_mappings(),
-        }
         try:
-            await self.async_es.indices.create(self.index, settings)
+            await self.async_es.indices.create(
+                index=self.index,
+                settings=self.default_settings(),
+                mappings=self.default_mappings(),
+            )
         except RequestError:
+            logger.error("An exception occurred when creating index", exc_info=True)
+        except BadRequestError:
             logger.error("An exception occurred when creating index", exc_info=True)
 
     def default_settings(self):
@@ -123,7 +126,8 @@ class AuditUtility:
                     )
                 else:
                     query["query"]["bool"]["must"].append({"match": {field: value}})
-        return await self.async_es.search(index=self.index, body=query)
+        result = await self.async_es.search(index=self.index, body=query)
+        return result.body
 
     async def close(self):
         if self.loop is not None:
