@@ -1,5 +1,7 @@
 from guillotina import testing
+from guillotina.component import query_utility
 from guillotina.tests.fixtures import _update_from_pytest_markers
+from guillotina_audit.interfaces import IAuditUtility
 
 import json
 import os
@@ -18,8 +20,8 @@ def base_settings_configurator(settings):
     settings["applications"].append("guillotina_audit")
     settings["audit"] = {
         "connection_settings": {
-            "hosts": [f"{annotations['elasticsearch']['host']}"]
-        }  # noqa
+            "hosts": [f"http://{annotations['elasticsearch']['host']}"]
+        }
     }
     settings["load_utilities"] = {
         "audit": {
@@ -37,7 +39,6 @@ testing.configure_with(base_settings_configurator)
 def elasticsearch_fixture(es):
     settings = testing.get_settings()
     host, port = es
-    settings["audit"]["connection_settings"]["hosts"] = [f"{host}:{port}"]
     settings = _update_from_pytest_markers(settings, None)
     testing.configure_with(base_settings_configurator)
     annotations["elasticsearch"]["host"] = f"{host}:{port}"
@@ -52,3 +53,5 @@ async def guillotina_es(elasticsearch_fixture, guillotina):
     )
     assert status == 200
     yield guillotina
+    audit_utility = query_utility(IAuditUtility)
+    await audit_utility.async_es.indices.delete(index="audit")

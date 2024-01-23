@@ -52,7 +52,7 @@ guillotina config file
       index_name: "audit"
       connection_settings:
         hosts:
-          - "127.0.0.1:9200"
+          - "http://127.0.0.1:9200"
         sniffer_timeout: 0.5
         sniff_on_start: true
 
