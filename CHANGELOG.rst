@@ -1,4 +1,4 @@
-2.0.0 (unreleased)
+2.0.0 (2024-01-23)
 ------------------
 
 - Supporting ES version 7 and 8
