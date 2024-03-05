@@ -1,7 +1,8 @@
 2.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Being able to decode dates and datetimes when indexing custom
+  payloads from events.
 
 
 2.0.0 (2024-01-23)

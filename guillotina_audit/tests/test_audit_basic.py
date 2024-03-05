@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from guillotina.component import query_utility
@@ -125,6 +126,24 @@ async def test_audit_basic(guillotina_es):
     assert len(resp["hits"]["hits"]) == 1
     assert status == 200
 
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/",
+        data=json.dumps(
+            {
+                "@type": "Item",
+                "id": "foo_item",
+                "title": "Foo Item",
+                "guillotina.behaviors.dublincore.IDublinCore": {
+                    "effective_date": "2023-01-01"
+                },
+            }
+        ),
+    )
+    assert status == 201
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+
 
 async def test_audit_wildcard(guillotina_es):
     response, status = await guillotina_es(
@@ -191,4 +210,17 @@ async def test_audit_wildcard(guillotina_es):
     assert len(resp["hits"]["hits"]) == 1
     assert resp["hits"]["hits"][0]["_source"]["creation_date"].startswith(
         "2023-05-12T21:45:32"
+    )
+
+
+async def test_json_dumps(guillotina_es):
+    response, status = await guillotina_es(
+        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+    audit_utility = query_utility(IAuditUtility)
+    json.dumps(
+        {"datetime": datetime.now(), "date": date.today()},
+        default=audit_utility._custom_serializer,
     )

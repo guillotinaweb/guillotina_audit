@@ -18,6 +18,7 @@ def base_settings_configurator(settings):
         settings["applications"] = []
     settings["applications"].append("guillotina")
     settings["applications"].append("guillotina_audit")
+    settings["applications"].append("guillotina_audit.tests.test_package")
     settings["audit"] = {
         "connection_settings": {
             "hosts": [f"http://{annotations['elasticsearch']['host']}"]

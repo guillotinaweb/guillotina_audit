@@ -33,6 +33,13 @@ class AuditUtility:
             **app_settings.get("audit", {}).get("connection_settings")
         )
 
+    def _custom_serializer(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(obj, datetime.date):
+            return obj.strftime("%Y-%m-%d")
+        raise TypeError("Object of type %s is not JSON serializable" % type(obj))
+
     async def create_index(self):
         try:
             await self.async_es.indices.create(
@@ -91,12 +98,16 @@ class AuditUtility:
             document["action"] = "modified"
             document["creation_date"] = obj.modification_date
             if self._settings.get("save_payload", False) is True:
-                document["payload"] = json.dumps(event.payload)
+                document["payload"] = json.dumps(
+                    event.payload, default=self._custom_serializer
+                )
         elif IObjectAddedEvent.providedBy(event):
             document["action"] = "added"
             document["creation_date"] = obj.creation_date
             if self._settings.get("save_payload", False) is True:
-                document["payload"] = json.dumps(event.payload)
+                document["payload"] = json.dumps(
+                    event.payload, default=self._custom_serializer
+                )
         elif IObjectRemovedEvent.providedBy(event):
             document["action"] = "removed"
             document["creation_date"] = datetime.datetime.now(timezone.utc)
