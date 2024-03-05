@@ -1,4 +1,4 @@
-2.0.1 (unreleased)
+2.0.1 (2024-03-05)
 ------------------
 
 - Being able to decode dates and datetimes when indexing custom
