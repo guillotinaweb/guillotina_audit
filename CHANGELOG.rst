@@ -1,4 +1,4 @@
-2.0.2 (unreleased)
+2.0.2 (2024-03-06)
 ------------------
 
 - Being able to setting up index_permission_changes in settings. If
