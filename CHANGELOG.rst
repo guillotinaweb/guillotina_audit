@@ -1,4 +1,4 @@
-2.0.3 (unreleased)
+2.0.3 (2024-03-06)
 ------------------
 
 - Adding permissions_changed action when permissions are changed
