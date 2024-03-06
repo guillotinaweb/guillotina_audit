@@ -224,3 +224,98 @@ async def test_json_dumps(guillotina_es):
         {"datetime": datetime.now(), "date": date.today()},
         default=audit_utility._custom_serializer,
     )
+
+
+async def test_permissions_modified_without_indexing(guillotina_es):
+    response, status = await guillotina_es(
+        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
+    )
+    assert status == 200
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/",
+        data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
+    )
+    assert status == 201
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 2
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/foo_item/@sharing",
+        data=json.dumps(
+            {
+                "prinperm": [
+                    {
+                        "principal": "foobar",
+                        "permission": "guillotina.ModifyContent",
+                        "setting": "Allow",
+                    }
+                ]
+            }
+        ),
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    assert status == 200
+    # There should be the same number of documents since indexing_permission_changes is False
+    assert len(resp["hits"]["hits"]) == 2
+
+
+@pytest.mark.app_settings(
+    {
+        "load_utilities": {
+            "audit": {
+                "provides": "guillotina_audit.interfaces.IAuditUtility",
+                "factory": "guillotina_audit.utility.AuditUtility",
+                "settings": {
+                    "index_name": "audit",
+                    "save_payload": False,
+                    "index_permission_changes": True,
+                },
+            }
+        }
+    }
+)
+async def test_permissions_modified_with_indexing(guillotina_es):
+    response, status = await guillotina_es(
+        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
+    )
+    assert status == 200
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/",
+        data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
+    )
+    assert status == 201
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 2
+
+    response, status = await guillotina_es(
+        "POST",
+        "/db/guillotina/foo_item/@sharing",
+        data=json.dumps(
+            {
+                "prinperm": [
+                    {
+                        "principal": "foobar",
+                        "permission": "guillotina.ModifyContent",
+                        "setting": "Allow",
+                    }
+                ]
+            }
+        ),
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    assert status == 200
+    # There should be one more document since indexing_permission_changes is True
+    assert len(resp["hits"]["hits"]) == 3

@@ -4,6 +4,7 @@ from guillotina.interfaces import IObjectAddedEvent
 from guillotina.interfaces import IObjectDuplicatedEvent
 from guillotina.interfaces import IObjectModifiedEvent
 from guillotina.interfaces import IObjectMovedEvent
+from guillotina.interfaces import IObjectPermissionsModifiedEvent
 from guillotina.interfaces import IObjectRemovedEvent
 from guillotina.interfaces import IResource
 from guillotina_audit.interfaces import IAuditUtility
@@ -35,8 +36,13 @@ async def audit_object_added(obj, event):
 )  # after indexing
 async def audit_object_modified(obj, event):
     try:
-        audit = query_utility(IAuditUtility)
-        audit.log_entry(obj, event)
+        if event.__providedBy__(IObjectPermissionsModifiedEvent) is True:
+            audit = query_utility(IAuditUtility)
+            if audit._settings.get("indexing_permission_changes", False) is True:
+                audit.log_entry(obj, event)
+        elif event.__providedBy__(IObjectModifiedEvent):
+            audit = query_utility(IAuditUtility)
+            audit.log_entry(obj, event)
     except Exception:
         logger.error("Error adding audit", exc_info=True)
 

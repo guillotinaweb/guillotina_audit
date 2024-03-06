@@ -1,7 +1,8 @@
 2.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Being able to setting up index_permission_changes in settings. If
+  defined as True, it will index all changes in permissions.
 
 
 2.0.1 (2024-03-05)

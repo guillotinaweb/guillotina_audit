@@ -6,7 +6,11 @@ app_settings = {
         "audit": {
             "provides": "guillotina_audit.interfaces.IAuditUtility",
             "factory": "guillotina_audit.utility.AuditUtility",
-            "settings": {"index_name": "audit", "save_payload": False},
+            "settings": {
+                "index_name": "audit",
+                "save_payload": False,
+                "index_permission_changes": False,
+            },
         }
     }
 }
