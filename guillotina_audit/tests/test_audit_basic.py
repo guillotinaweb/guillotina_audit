@@ -264,6 +264,17 @@ async def test_permissions_modified_without_indexing(guillotina_es):
     assert status == 200
     # There should be the same number of documents since indexing_permission_changes is False
     assert len(resp["hits"]["hits"]) == 2
+    response, status = await guillotina_es(
+        "PATCH",
+        "/db/guillotina/foo_item",
+        data=json.dumps({"title": "Another title"})
+    )
+    assert status == 204
+    await asyncio.sleep(2)
+    # Let's make sure ObjectModifiedEvent adds a document
+    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    assert status == 200
+    assert len(resp["hits"]["hits"]) == 3
 
 
 @pytest.mark.app_settings(
@@ -319,3 +330,4 @@ async def test_permissions_modified_with_indexing(guillotina_es):
     assert status == 200
     # There should be one more document since indexing_permission_changes is True
     assert len(resp["hits"]["hits"]) == 3
+    assert resp["hits"]["hits"][-1]["_source"]["action"] == "permissions_changed"

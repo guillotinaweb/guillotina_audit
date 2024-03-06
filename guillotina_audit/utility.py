@@ -9,6 +9,7 @@ from guillotina.interfaces import IObjectDuplicatedEvent
 from guillotina.interfaces import IObjectModifiedEvent
 from guillotina.interfaces import IObjectMovedEvent
 from guillotina.interfaces import IObjectRemovedEvent
+from guillotina.interfaces import IObjectPermissionsModifiedEvent
 from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
 from guillotina_audit.models import AuditDocument
@@ -93,6 +94,9 @@ class AuditUtility:
             document["creation_date"] = datetime.datetime.now(timezone.utc)
         elif IObjectMovedEvent.providedBy(event):
             document["action"] = "moved"
+            document["creation_date"] = datetime.datetime.now(timezone.utc)
+        elif IObjectPermissionsModifiedEvent.providedBy(event):
+            document["action"] = "permissions_changed"
             document["creation_date"] = datetime.datetime.now(timezone.utc)
         elif IObjectModifiedEvent.providedBy(event):
             document["action"] = "modified"
