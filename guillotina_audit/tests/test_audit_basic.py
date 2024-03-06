@@ -314,7 +314,7 @@ async def test_permissions_modified_with_indexing(guillotina_es):
         ),
     )
     assert status == 200
-    await asyncio.sleep(2)
+    await asyncio.sleep(3)
     resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
     assert status == 200
     # There should be one more document since indexing_permission_changes is True

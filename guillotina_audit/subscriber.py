@@ -38,7 +38,7 @@ async def audit_object_modified(obj, event):
     try:
         if event.__providedBy__(IObjectPermissionsModifiedEvent) is True:
             audit = query_utility(IAuditUtility)
-            if audit._settings.get("indexing_permission_changes", False) is True:
+            if audit._settings.get("index_permission_changes", False) is True:
                 audit.log_entry(obj, event)
         elif event.__providedBy__(IObjectModifiedEvent):
             audit = query_utility(IAuditUtility)
