@@ -1,7 +1,8 @@
 2.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Removing zope.interface dependency in setup.py
+- Removing docker dependency
 
 
 2.0.3 (2024-03-06)

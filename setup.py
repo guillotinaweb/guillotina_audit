@@ -10,7 +10,7 @@ test_requires = [
     "coverage",
     "pytest-cov",
     "pytest-docker-fixtures[pg]>=1.3.0",
-    "docker>=6.0.0,<=6.1.3",
+    "docker",
 ]
 
 
@@ -40,7 +40,6 @@ setup(
         "guillotina>=6.0.0a16",
         "pydantic",
         "elasticsearch[async]>=8.0.0,<=8.12.0",
-        "zope.interface==5.1.0"  # TODO: remove once guillotina has solved this
     ],
     tests_require=test_requires,
     extras_require={"test": test_requires},
