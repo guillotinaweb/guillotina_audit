@@ -1,4 +1,4 @@
-2.0.4 (unreleased)
+2.0.4 (2024-08-02)
 ------------------
 
 - Removing zope.interface dependency in setup.py
