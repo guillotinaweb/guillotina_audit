@@ -265,9 +265,7 @@ async def test_permissions_modified_without_indexing(guillotina_es):
     # There should be the same number of documents since indexing_permission_changes is False
     assert len(resp["hits"]["hits"]) == 2
     response, status = await guillotina_es(
-        "PATCH",
-        "/db/guillotina/foo_item",
-        data=json.dumps({"title": "Another title"})
+        "PATCH", "/db/guillotina/foo_item", data=json.dumps({"title": "Another title"})
     )
     assert status == 204
     await asyncio.sleep(2)
