@@ -1,7 +1,9 @@
 2.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Adding metadata field as an object
+- Adding command audit-update-mappings to update mappings
+  [nilbacardit26]
 
 
 2.0.4 (2024-08-02)

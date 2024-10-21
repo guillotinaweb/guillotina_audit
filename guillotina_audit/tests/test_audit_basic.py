@@ -329,3 +329,46 @@ async def test_permissions_modified_with_indexing(guillotina_es):
     # There should be one more document since indexing_permission_changes is True
     assert len(resp["hits"]["hits"]) == 3
     assert resp["hits"]["hits"][-1]["_source"]["action"] == "permissions_changed"
+
+
+async def test_metadata_field(guillotina_es):
+    response, status = await guillotina_es(
+        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
+    )
+    assert status == 200
+    await asyncio.sleep(2)
+    audit_utility = query_utility(IAuditUtility)
+    payload = AuditDocument(
+        action="CreatingMetadata",
+        metadata={
+            "foo_number": 120,
+            "foo_string": "foo_string",
+            "foo_boolean": True,
+            "foo_list": [1, 2, 3, 4],
+            "foo_dict": {
+                "foo_number": 100,
+                "foo_string": "foo_string",
+                "foo_dict": {"foo_key": "foo_value"},
+            },
+        },
+    )
+    audit_utility.log_wildcard(payload)
+    # Let's check the index has been created
+    resp = await audit_utility.async_es.indices.get_alias()
+    await asyncio.sleep(2)
+    resp, status = await guillotina_es(
+        "GET",
+        "/db/guillotina/@audit?action=CreatingMetadata",
+    )
+    assert resp["hits"]["hits"][0]["_source"]["action"] == "CreatingMetadata"
+    assert resp["hits"]["hits"][0]["_source"]["metadata"] == {
+        "foo_boolean": True,
+        "foo_dict": {
+            "foo_dict": {"foo_key": "foo_value"},
+            "foo_number": 100,
+            "foo_string": "foo_string",
+        },
+        "foo_list": [1, 2, 3, 4],
+        "foo_number": 120,
+        "foo_string": "foo_string",
+    }

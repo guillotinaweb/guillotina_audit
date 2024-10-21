@@ -41,6 +41,12 @@ class AuditUtility:
             return obj.strftime("%Y-%m-%d")
         raise TypeError("Object of type %s is not JSON serializable" % type(obj))
 
+    async def update_mappings(self):
+        await self.async_es.indices.put_mapping(
+            body=self.default_mappings(), index=self.index
+        )
+        logger.info(f"Updating mappings {self.default_mappings()}")
+
     async def create_index(self):
         try:
             await self.async_es.indices.create(
@@ -76,6 +82,7 @@ class AuditUtility:
                 "creator": {"type": "keyword"},
                 "creation_date": {"type": "date", "store": True},
                 "payload": {"type": "text", "store": True},
+                "metadata": {"type": "object", "dynamic": True},
             },
         }
 

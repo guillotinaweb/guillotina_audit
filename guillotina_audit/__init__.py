@@ -12,7 +12,10 @@ app_settings = {
                 "index_permission_changes": False,
             },
         }
-    }
+    },
+    "commands": {
+        "audit-update-mappings": "guillotina_audit.commands.mappings.UpdateMappingsCommand"
+    },
 }
 
 
