@@ -41,6 +41,24 @@ class AuditUtility:
             return obj.strftime("%Y-%m-%d")
         raise TypeError("Object of type %s is not JSON serializable" % type(obj))
 
+    async def update_settings(self):
+        await self.async_es.indices.close(index=self.index)
+        try:
+            await self.async_es.indices.put_settings(
+                body=self.default_settings(), index=self.index
+            )
+            logger.info(f"Updating mappings {self.default_settings()}")
+        except Exception:
+            logger.error("Error updating settings", exc_info=True)
+        finally:
+            await self.async_es.indices.open(index=self.index)
+
+    async def update_mappings(self):
+        await self.async_es.indices.put_mapping(
+            body=self.default_mappings(), index=self.index
+        )
+        logger.info(f"Updating mappings {self.default_mappings()}")
+
     async def create_index(self):
         try:
             await self.async_es.indices.create(
@@ -53,15 +71,44 @@ class AuditUtility:
         except BadRequestError:
             logger.error("An exception occurred when creating index", exc_info=True)
 
+    def settings(self):
+        return {
+            "settings": {
+                "analysis": {
+                    "analyzer": {
+                        "my_analyzer": {
+                            "type": "custom",
+                            "tokenizer": "standard",
+                            "filter": ["lowercase"],
+                        },
+                        "my_stop_analyzer": {
+                            "type": "custom",
+                            "tokenizer": "standard",
+                            "filter": ["lowercase", "english_stop"],
+                        },
+                    },
+                    "filter": {
+                        "english_stop": {"type": "stop", "stopwords": "_english_"}
+                    },
+                }
+            }
+        }
+
     def default_settings(self):
         return {
             "analysis": {
-                "analyzer": {"path_analyzer": {"tokenizer": "path_tokenizer"}},
-                "tokenizer": {
-                    "path_tokenizer": {"type": "path_hierarchy", "delimiter": "/"}
+                "analyzer": {
+                    "path_analyzer": {  # Custom analyzer definition
+                        "type": "custom",
+                        "tokenizer": "path_tokenizer",
+                    }
                 },
-                "filter": {},
-                "char_filter": {},
+                "tokenizer": {
+                    "path_tokenizer": {  # Custom tokenizer definition
+                        "type": "path_hierarchy",
+                        "delimiter": "/",
+                    }
+                },
             }
         }
 
@@ -76,6 +123,7 @@ class AuditUtility:
                 "creator": {"type": "keyword"},
                 "creation_date": {"type": "date", "store": True},
                 "payload": {"type": "text", "store": True},
+                "metadata": {"type": "object", "dynamic": True},
             },
         }
 

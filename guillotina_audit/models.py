@@ -16,6 +16,7 @@ class AuditDocument(BaseModel):
     creator: Optional[str] = None
     creation_date: datetime = Field(default=datetime.now(timezone.utc))
     type_name: Optional[str] = None
+    metadata: Optional[dict] = None
 
     @field_serializer("payload")
     def serialize_payload(self, payload: dict, _info):
