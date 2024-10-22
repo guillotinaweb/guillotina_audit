@@ -9,16 +9,16 @@ import logging
 logger = logging.getLogger("guillotina_audit")
 
 
-class UpdateMappingsCommand(Command):
-    description = "Update Mappings Command"
+class UpdateSettingsCommand(Command):
+    description = "Update Settings Command"
     migrator = None
     reindexer = None
 
     def get_parser(self):
-        parser = super(UpdateMappingsCommand, self).get_parser()
+        parser = super(UpdateSettingsCommand, self).get_parser()
         return parser
 
     async def run(self, arguments, settings, app):
         search = get_utility(ICatalogUtility)
         await asyncio.sleep(1)
-        await search.update_mappings()
+        await search.update_settings()

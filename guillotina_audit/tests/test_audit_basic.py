@@ -14,13 +14,8 @@ pytestmark = pytest.mark.asyncio
 
 
 async def test_audit_basic(guillotina_es):
-    response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
-    assert status == 200
-    await asyncio.sleep(2)
-    audit_utility = query_utility(IAuditUtility)
     # Let's check the index has been created
+    audit_utility = query_utility(IAuditUtility)
     resp = await audit_utility.async_es.indices.get_alias()
     assert "audit" in resp
     resp = await audit_utility.async_es.indices.get_mapping(index="audit")
@@ -146,11 +141,6 @@ async def test_audit_basic(guillotina_es):
 
 
 async def test_audit_wildcard(guillotina_es):
-    response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
-    assert status == 200
-    await asyncio.sleep(2)
     audit_utility = query_utility(IAuditUtility)
 
     payload = AuditDocument(action="added", type_name="Fullscreen")
@@ -214,11 +204,6 @@ async def test_audit_wildcard(guillotina_es):
 
 
 async def test_json_dumps(guillotina_es):
-    response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
-    assert status == 200
-    await asyncio.sleep(2)
     audit_utility = query_utility(IAuditUtility)
     json.dumps(
         {"datetime": datetime.now(), "date": date.today()},
@@ -227,11 +212,6 @@ async def test_json_dumps(guillotina_es):
 
 
 async def test_permissions_modified_without_indexing(guillotina_es):
-    response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
-    assert status == 200
-
     response, status = await guillotina_es(
         "POST",
         "/db/guillotina/",
@@ -292,11 +272,6 @@ async def test_permissions_modified_without_indexing(guillotina_es):
 )
 async def test_permissions_modified_with_indexing(guillotina_es):
     response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
-    assert status == 200
-
-    response, status = await guillotina_es(
         "POST",
         "/db/guillotina/",
         data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
@@ -332,11 +307,6 @@ async def test_permissions_modified_with_indexing(guillotina_es):
 
 
 async def test_metadata_field(guillotina_es):
-    response, status = await guillotina_es(
-        "POST", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
-    )
-    assert status == 200
-    await asyncio.sleep(2)
     audit_utility = query_utility(IAuditUtility)
     payload = AuditDocument(
         action="CreatingMetadata",

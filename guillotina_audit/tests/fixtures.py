@@ -49,10 +49,11 @@ def elasticsearch_fixture(es):
 
 @pytest.fixture(scope="function")
 async def guillotina_es(elasticsearch_fixture, guillotina):
+    audit_utility = query_utility(IAuditUtility)
+    await audit_utility.create_index()
     response, status = await guillotina(
         "POST", "/db/", data=json.dumps({"@type": "Container", "id": "guillotina"})
     )
     assert status == 200
     yield guillotina
-    audit_utility = query_utility(IAuditUtility)
     await audit_utility.async_es.indices.delete(index="audit")

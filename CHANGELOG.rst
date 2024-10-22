@@ -3,6 +3,7 @@
 
 - Adding metadata field as an object
 - Adding command audit-update-mappings to update mappings
+- Adding command audit-update-settings to update settings
   [nilbacardit26]
 
 
