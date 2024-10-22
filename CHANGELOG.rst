@@ -1,4 +1,4 @@
-2.0.5 (unreleased)
+2.0.5 (2024-10-22)
 ------------------
 
 - Adding metadata field as an object
