@@ -325,6 +325,7 @@ async def test_metadata_field(guillotina_es):
                 "foo_string": "foo_string",
                 "foo_dict": {"foo_key": "foo_value"},
             },
+            "foo_decimal": 1.234,
         },
     )
     audit_utility.log_wildcard(payload)
@@ -346,4 +347,5 @@ async def test_metadata_field(guillotina_es):
         "foo_list": [1, 2, 3, 4],
         "foo_number": 120,
         "foo_string": "foo_string",
+        "foo_decimal": 1.234,
     }
