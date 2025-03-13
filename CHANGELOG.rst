@@ -1,4 +1,4 @@
-2.0.6 (unreleased)
+2.0.6 (2025-03-13)
 ------------------
 
 - To enable the audit parser, you need to add search_parser to the
