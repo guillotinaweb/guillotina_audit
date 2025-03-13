@@ -27,3 +27,4 @@ def includeme(root, settings):
     configure.scan("guillotina_audit.api")
     configure.scan("guillotina_audit.permissions")
     configure.scan("guillotina_audit.models")
+    configure.scan("guillotina_audit.parser")

@@ -1,7 +1,12 @@
 2.0.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- To enable the audit parser, you need to add search_parser to the
+  configuration file. This parser is utilized when invoking @audit to
+  query the index. If not specified, the default parser will be
+  used. I recommend using the parser from guillotina_elasticsearch, as
+  it has undergone extensive development and refinement.
+  [nilbacardit26]
 
 
 2.0.5 (2024-10-22)
