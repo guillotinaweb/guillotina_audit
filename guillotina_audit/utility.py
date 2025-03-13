@@ -4,12 +4,14 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch import BadRequestError
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
+from guillotina.catalog.utils import parse_query
 from guillotina.interfaces import IObjectAddedEvent
 from guillotina.interfaces import IObjectDuplicatedEvent
 from guillotina.interfaces import IObjectModifiedEvent
 from guillotina.interfaces import IObjectMovedEvent
 from guillotina.interfaces import IObjectPermissionsModifiedEvent
 from guillotina.interfaces import IObjectRemovedEvent
+from guillotina.utils import get_current_container
 from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
 from guillotina_audit.models import AuditDocument
@@ -170,25 +172,9 @@ class AuditUtility:
         coroutine = self.async_es.index(index=self.index, body=document)
         asyncio.create_task(coroutine)
 
-    async def query_audit(self, params={}):
-        if params == {}:
-            query = {"query": {"match_all": {}}}
-        else:
-            query = {"query": {"bool": {"must": []}}}
-            for field, value in params.items():
-                if (
-                    field.endswith("__gte")
-                    or field.endswith("__lte")
-                    or field.endswith("__gt")
-                    or field.endswith("__lt")
-                ):
-                    field_parsed = field.split("__")[0]
-                    operator = field.split("__")[1]
-                    query["query"]["bool"]["must"].append(
-                        {"range": {field_parsed: {operator: value}}}
-                    )
-                else:
-                    query["query"]["bool"]["must"].append({"match": {field: value}})
+    async def query_audit(self, query):
+        container = get_current_container()
+        query = parse_query(container, query, self)
         result = await self.async_es.search(index=self.index, body=query)
         return result.body
 

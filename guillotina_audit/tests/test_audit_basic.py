@@ -13,6 +13,7 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.app_settings({"search_parser": "audit"})
 async def test_audit_basic(guillotina_es):
     # Let's check the index has been created
     audit_utility = query_utility(IAuditUtility)
@@ -145,6 +146,7 @@ async def test_audit_basic(guillotina_es):
     resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
 
 
+@pytest.mark.app_settings({"search_parser": "audit"})
 async def test_audit_wildcard(guillotina_es):
     audit_utility = query_utility(IAuditUtility)
 
@@ -216,6 +218,7 @@ async def test_json_dumps(guillotina_es):
     )
 
 
+@pytest.mark.app_settings({"search_parser": "audit"})
 async def test_permissions_modified_without_indexing(guillotina_es):
     response, status = await guillotina_es(
         "POST",
@@ -262,6 +265,7 @@ async def test_permissions_modified_without_indexing(guillotina_es):
 
 @pytest.mark.app_settings(
     {
+        "search_parser": "audit",
         "load_utilities": {
             "audit": {
                 "provides": "guillotina_audit.interfaces.IAuditUtility",
@@ -272,7 +276,7 @@ async def test_permissions_modified_without_indexing(guillotina_es):
                     "index_permission_changes": True,
                 },
             }
-        }
+        },
     }
 )
 async def test_permissions_modified_with_indexing(guillotina_es):
@@ -311,6 +315,7 @@ async def test_permissions_modified_with_indexing(guillotina_es):
     assert resp["hits"]["hits"][-1]["_source"]["action"] == "permissions_changed"
 
 
+@pytest.mark.app_settings({"search_parser": "audit"})
 async def test_metadata_field(guillotina_es):
     audit_utility = query_utility(IAuditUtility)
     payload = AuditDocument(
