@@ -2,16 +2,24 @@
 from guillotina import configure
 from guillotina.catalog.parser import BaseParser
 from guillotina.interfaces import IResource
-from guillotina.interfaces import ISearchParser
 from guillotina_audit.interfaces import IAuditUtility
 from guillotina_audit.interfaces import ParsedQueryInfo
+from zope.interface import Interface
 
 import typing
 
 
-@configure.adapter(
-    for_=(IAuditUtility, IResource), provides=ISearchParser, name="audit"
-)
+class IAuditParser(Interface):
+    def __init__(utility: IAuditUtility, context: Interface):
+        """ """
+
+    def __call__() -> typing.Any:
+        """
+        Translate the query
+        """
+
+
+@configure.adapter(for_=(IAuditUtility, IResource), provides=IAuditParser, name="audit")
 class Parser(BaseParser):
     def __call__(self, params: typing.Dict) -> ParsedQueryInfo:
         if params == {}:

@@ -1,7 +1,9 @@
 2.0.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Adding audit_parser as a standalone parser. Decoupling it from
+  search_parser.
+  [nilbacardit26]
 
 
 2.0.6 (2025-03-13)

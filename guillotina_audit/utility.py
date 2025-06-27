@@ -4,7 +4,6 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch import BadRequestError
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
-from guillotina.catalog.utils import parse_query
 from guillotina.interfaces import IObjectAddedEvent
 from guillotina.interfaces import IObjectDuplicatedEvent
 from guillotina.interfaces import IObjectModifiedEvent
@@ -15,6 +14,8 @@ from guillotina.utils import get_current_container
 from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
 from guillotina_audit.models import AuditDocument
+from guillotina_audit.parser import IAuditParser
+from guillotina.component import query_multi_adapter
 
 import asyncio
 import datetime
@@ -172,9 +173,18 @@ class AuditUtility:
         coroutine = self.async_es.index(index=self.index, body=document)
         asyncio.create_task(coroutine)
 
+    def parse_query(self, context, query):
+        parser = query_multi_adapter(
+            (self, context), IAuditParser, name=app_settings["audit_parser"]
+        )
+        if parser is None:
+            logger.warning(f"No parser found for {self}")
+            return None
+        return parser(query)
+
     async def query_audit(self, query):
         container = get_current_container()
-        query = parse_query(container, query, self)
+        query = self.parse_query(container, query)
         result = await self.async_es.search(index=self.index, body=query)
         return result.body
 
