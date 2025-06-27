@@ -1,4 +1,4 @@
-2.0.7 (unreleased)
+2.0.7 (2025-06-27)
 ------------------
 
 - Adding audit_parser as a standalone parser. Decoupling it from
