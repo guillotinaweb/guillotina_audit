@@ -4,6 +4,7 @@ from elasticsearch import AsyncElasticsearch
 from elasticsearch import BadRequestError
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
+from guillotina.component import query_multi_adapter
 from guillotina.interfaces import IObjectAddedEvent
 from guillotina.interfaces import IObjectDuplicatedEvent
 from guillotina.interfaces import IObjectModifiedEvent
@@ -15,7 +16,6 @@ from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
 from guillotina_audit.models import AuditDocument
 from guillotina_audit.parser import IAuditParser
-from guillotina.component import query_multi_adapter
 
 import asyncio
 import datetime
