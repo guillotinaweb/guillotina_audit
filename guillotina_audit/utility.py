@@ -36,6 +36,9 @@ class AuditUtility:
         self.async_es = AsyncElasticsearch(
             **app_settings.get("audit", {}).get("connection_settings")
         )
+        await self.async_es.cluster.put_settings(
+            body={"persistent": {"action.auto_create_index": "false"}}
+        )
 
     def _custom_serializer(self, obj):
         if isinstance(obj, datetime.datetime):

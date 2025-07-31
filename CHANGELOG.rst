@@ -1,7 +1,9 @@
 2.0.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Set action.auto_create_index to false when initializing the utility
+  to prevent the creation of the index when calling log_entry
+  [nilbacardit26]
 
 
 2.0.7 (2025-06-27)
