@@ -1,4 +1,4 @@
-2.0.8 (unreleased)
+2.0.8 (2025-07-31)
 ------------------
 
 - Set action.auto_create_index to false when initializing the utility
