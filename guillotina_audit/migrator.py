@@ -27,7 +27,7 @@ class Migrator:
         ts = datetime.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
         return f"{self.alias}-{ts}"
 
-    async def _get_index_pointed_by_alias(self) -> str | None:
+    async def _get_index_pointed_by_alias(self):
         try:
             data = await self.es.indices.get_alias(name=self.alias)
             # Usually a single index; pick the first key deterministically
@@ -36,7 +36,7 @@ class Migrator:
         except NotFoundError:
             return None
 
-    async def _ensure_alias_exists_if_raw_index(self) -> str | None:
+    async def _ensure_alias_exists_if_raw_index(self):
         """
         If there is no alias yet but there *is* a raw index with the alias name
         (e.g., an index literally named 'audit'), create the alias on it so we
@@ -99,7 +99,7 @@ class Migrator:
         await self.es.indices.update_aliases(body={"actions": actions})
         logger.info("Alias %s now points to %s", self.alias, new_index)
 
-    async def migrate(self, delete_old: bool = False) -> str:
+    async def migrate(self, delete_old: bool = False):
         """
         Perform migration:
           - find current concrete index behind alias (or raw index)
