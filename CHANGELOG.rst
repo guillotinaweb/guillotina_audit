@@ -1,4 +1,4 @@
-2.0.9 (unreleased)
+2.0.9 (2025-10-09)
 ------------------
 
 - Adding audit-migrate command
