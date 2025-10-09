@@ -40,6 +40,24 @@ class AuditUtility:
             body={"persistent": {"action.auto_create_index": "false"}}
         )
 
+    async def list_indices(self, pattern: str = "*"):
+        """
+        Returns basic info about indices matching pattern.
+        """
+        # cat APIs return text by default; ask for JSON for easy assertions
+        return await self.async_es.cat.indices(index=pattern, format="json")
+
+    async def get_current_index(self):
+        index_pattern = f"{self.index}*"
+        results = await self.list_indices(index_pattern)
+        return results.body[0]["index"]
+
+    async def list_aliases(self, name: str = "*"):
+        """
+        Returns a dict: {index_name: {"aliases": {alias_name: {...}}}, ...}
+        """
+        return await self.async_es.indices.get_alias(name=name)
+
     def _custom_serializer(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime("%Y-%m-%d %H:%M:%S")
@@ -122,7 +140,7 @@ class AuditUtility:
         return {
             "dynamic": False,
             "properties": {
-                "path": {"type": "text", "store": True, "analyzer": "path_analyzer"},
+                "path": {"type": "keyword", "store": True},
                 "type_name": {"type": "keyword", "store": True},
                 "uuid": {"type": "keyword", "store": True},
                 "action": {"type": "keyword", "store": True},
