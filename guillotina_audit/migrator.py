@@ -78,7 +78,7 @@ class Migrator:
                 await asyncio.sleep(10)
                 data = await self.es.tasks.get(task_id=task_id)
                 status = data["task"]["status"]
-                logger.info(
+                logger.warning(
                     f'{status["created"]}/{status["total"]} - '
                     f"Copying data to new index. task id: {task_id}"
                 )
