@@ -1,7 +1,8 @@
 2.0.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Indexing payload as a keyword. Changing mappings
+  [nilbacardit26]
 
 
 2.0.9 (2025-10-09)
