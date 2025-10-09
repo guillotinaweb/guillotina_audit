@@ -1,7 +1,8 @@
 2.0.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Rverting loggers info
+  [nilbacardit26]
 
 
 2.0.10 (2025-10-09)
