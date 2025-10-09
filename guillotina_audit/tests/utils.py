@@ -1,6 +1,6 @@
+from guillotina import task_vars
 from guillotina.tests import utils
 from guillotina.tests.utils import get_container
-from guillotina import task_vars
 
 
 async def setup_txn_on_container(requester, container_id="guillotina"):
