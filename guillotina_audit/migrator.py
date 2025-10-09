@@ -89,7 +89,7 @@ class Migrator:
             logger.error("Reindex from %s to %s failed", src, dest, exc_info=True)
             raise
 
-    async def _swap_alias(self, old_index: str | None, new_index: str):
+    async def _swap_alias(self, old_index: str, new_index: str):
         actions = []
         # Mark new index as the write index for this alias (handy for future rollovers)
         actions.append(
