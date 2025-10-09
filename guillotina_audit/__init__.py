@@ -17,6 +17,7 @@ app_settings = {
     "commands": {
         "audit-update-mappings": "guillotina_audit.commands.mappings.UpdateMappingsCommand",
         "audit-update-settings": "guillotina_audit.commands.settings.UpdateSettingsCommand",
+        "audit-migrate": "guillotina_audit.commands.migrator.MigratorCommand",
     },
 }
 

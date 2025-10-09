@@ -56,4 +56,5 @@ async def guillotina_es(elasticsearch_fixture, guillotina):
     )
     assert status == 200
     yield guillotina
-    await audit_utility.async_es.indices.delete(index="audit")
+    index = await audit_utility.get_current_index()
+    await audit_utility.async_es.indices.delete(index=index)

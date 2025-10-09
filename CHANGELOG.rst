@@ -1,7 +1,8 @@
 2.0.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Adding audit-migrate command
+  [nilbacardit26]
 
 
 2.0.8 (2025-07-31)

@@ -22,6 +22,7 @@ class IAuditParser(Interface):
 @configure.adapter(for_=(IAuditUtility, IResource), provides=IAuditParser, name="audit")
 class Parser(BaseParser):
     def __call__(self, params: typing.Dict) -> ParsedQueryInfo:
+        size = params.pop("size", 100)
         if params == {}:
             query = {"query": {"match_all": {}}}
         else:
@@ -40,4 +41,5 @@ class Parser(BaseParser):
                     )
                 else:
                     query["query"]["bool"]["must"].append({"match": {field: value}})
+        query["size"] = size
         return typing.cast(ParsedQueryInfo, query)
