@@ -146,7 +146,16 @@ class AuditUtility:
                 "action": {"type": "keyword", "store": True},
                 "creator": {"type": "keyword"},
                 "creation_date": {"type": "date", "store": True},
-                "payload": {"type": "keyword", "store": True},
+                "payload": {
+                    "store": True,
+                    "type": "text",
+                    "fields": {
+                        "raw": {
+                            "type": "keyword",
+                            "ignore_above": 16384
+                        }
+                    },
+                },
                 "metadata": {"type": "object", "dynamic": True},
             },
         }

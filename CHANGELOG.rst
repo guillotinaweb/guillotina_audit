@@ -1,7 +1,9 @@
 2.0.11 (2025-10-09)
 -------------------
 
-- Rverting loggers info
+- Reverting loggers info
+  [nilbacardit26]
+- Indexing payload as a multifield with keyword
   [nilbacardit26]
 
 
