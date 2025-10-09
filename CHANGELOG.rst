@@ -1,4 +1,4 @@
-2.0.10 (unreleased)
+2.0.10 (2025-10-09)
 -------------------
 
 - Indexing payload as a keyword. Changing mappings
