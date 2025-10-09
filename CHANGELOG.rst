@@ -1,4 +1,4 @@
-2.0.11 (unreleased)
+2.0.11 (2025-10-09)
 -------------------
 
 - Rverting loggers info
