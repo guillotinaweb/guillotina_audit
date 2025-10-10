@@ -149,12 +149,7 @@ class AuditUtility:
                 "payload": {
                     "store": True,
                     "type": "text",
-                    "fields": {
-                        "raw": {
-                            "type": "keyword",
-                            "ignore_above": 16384
-                        }
-                    },
+                    "fields": {"raw": {"type": "keyword", "ignore_above": 16384}},
                 },
                 "metadata": {"type": "object", "dynamic": True},
             },
