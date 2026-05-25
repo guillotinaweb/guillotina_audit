@@ -1,7 +1,15 @@
-2.0.12 (unreleased)
+3.0.0 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Upgrade the Python Elasticsearch client dependency to 9.x
+  (``elasticsearch[async]>=9.0.0,<10.0.0``).
+  [nilbacardit26]
+- Require Guillotina 7.0.0 or newer and Python 3.10 or newer.
+  This is a breaking dependency change.
+  [nilbacardit26]
+- Add an Elasticsearch fixture matrix selectable with ``ES_TEST_VERSION=6``,
+  ``ES_TEST_VERSION=7``, ``ES_TEST_VERSION=8`` or ``ES_TEST_VERSION=9``.
+  [nilbacardit26]
 
 
 2.0.11 (2025-10-09)
