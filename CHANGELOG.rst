@@ -4,6 +4,9 @@
 - Map legacy ``audit.connection_settings.timeout`` to Elasticsearch client 9's
   ``request_timeout`` option, preserving explicit ``request_timeout`` values.
   [nilbacardit26]
+- Stabilize audit tests that assert documents created by background indexing
+  tasks by waiting for the expected audit hits before asserting on them.
+  [nilbacardit26]
 
 
 3.0.1 (2026-05-25)
