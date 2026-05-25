@@ -13,6 +13,19 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
+async def get_audit_hits(guillotina_es, expected_count=None, query=""):
+    resp = None
+    status = None
+    for _ in range(20):
+        resp, status = await guillotina_es("GET", f"/db/guillotina/@audit{query}")
+        if status == 200 and (
+            expected_count is None or len(resp["hits"]["hits"]) == expected_count
+        ):
+            return resp, status
+        await asyncio.sleep(0.5)
+    return resp, status
+
+
 async def test_audit_basic(guillotina_es):
     # Let's check the index has been created
     audit_utility = query_utility(IAuditUtility)
@@ -223,8 +236,7 @@ async def test_permissions_modified_without_indexing(guillotina_es):
         data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
     )
     assert status == 201
-    await asyncio.sleep(2)
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    resp, status = await get_audit_hits(guillotina_es, expected_count=2)
     assert status == 200
     assert len(resp["hits"]["hits"]) == 2
 
@@ -244,8 +256,7 @@ async def test_permissions_modified_without_indexing(guillotina_es):
         ),
     )
     assert status == 200
-    await asyncio.sleep(2)
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    resp, status = await get_audit_hits(guillotina_es, expected_count=2)
     assert status == 200
     # There should be the same number of documents since indexing_permission_changes is False
     assert len(resp["hits"]["hits"]) == 2
@@ -253,9 +264,8 @@ async def test_permissions_modified_without_indexing(guillotina_es):
         "PATCH", "/db/guillotina/foo_item", data=json.dumps({"title": "Another title"})
     )
     assert status == 204
-    await asyncio.sleep(2)
     # Let's make sure ObjectModifiedEvent adds a document
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    resp, status = await get_audit_hits(guillotina_es, expected_count=3)
     assert status == 200
     assert len(resp["hits"]["hits"]) == 3
 
@@ -283,8 +293,7 @@ async def test_permissions_modified_with_indexing(guillotina_es):
         data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
     )
     assert status == 201
-    await asyncio.sleep(2)
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    resp, status = await get_audit_hits(guillotina_es, expected_count=2)
     assert status == 200
     assert len(resp["hits"]["hits"]) == 2
 
@@ -304,8 +313,7 @@ async def test_permissions_modified_with_indexing(guillotina_es):
         ),
     )
     assert status == 200
-    await asyncio.sleep(3)
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
+    resp, status = await get_audit_hits(guillotina_es, expected_count=3)
     assert status == 200
     # There should be one more document since indexing_permission_changes is True
     assert len(resp["hits"]["hits"]) == 3
