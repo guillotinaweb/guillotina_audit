@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import timezone
-from elasticsearch import AsyncElasticsearch
 from elasticsearch import BadRequestError
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
@@ -14,6 +13,8 @@ from guillotina.interfaces import IObjectRemovedEvent
 from guillotina.utils import get_current_container
 from guillotina.utils.auth import get_authenticated_user
 from guillotina.utils.content import get_content_path
+from guillotina_audit.connection import AsyncElasticsearch
+from guillotina_audit.connection import get_connection_settings
 from guillotina_audit.models import AuditDocument
 from guillotina_audit.parser import IAuditParser
 
@@ -34,7 +35,9 @@ class AuditUtility:
 
     async def initialize(self, app):
         self.async_es = AsyncElasticsearch(
-            **app_settings.get("audit", {}).get("connection_settings")
+            **get_connection_settings(
+                app_settings.get("audit", {}).get("connection_settings")
+            )
         )
         await self.async_es.cluster.put_settings(
             body={"persistent": {"action.auto_create_index": "false"}}
@@ -120,6 +123,7 @@ class AuditUtility:
 
     def default_settings(self):
         return {
+            "number_of_replicas": 0,
             "analysis": {
                 "analyzer": {
                     "path_analyzer": {  # Custom analyzer definition
@@ -133,7 +137,7 @@ class AuditUtility:
                         "delimiter": "/",
                     }
                 },
-            }
+            },
         }
 
     def default_mappings(self):

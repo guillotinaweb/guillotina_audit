@@ -37,7 +37,16 @@ analysis of object-level activities.
 Installation
 ------------
 
-`pip install guillotina-audit`
+``pip install guillotina-audit`` installs the Elasticsearch 9.x Python client.
+
+
+Compatibility
+-------------
+
+``guillotina_audit`` 3.x requires Python 3.10 or newer and Guillotina 7.0.0
+or newer. It uses ``elasticsearch[async]>=9.4.0,<10.0.0`` and supports
+Elasticsearch clusters 7.x, 8.x and 9.x through Elasticsearch compatibility
+headers.
 
 
 Configuration
@@ -72,3 +81,31 @@ Uninstall on a site
 "DELETE", "/db/guillotina/@addons", data=json.dumps({"id": "audit"})
 
 Uninstalling will not delete the log entries created in ES.
+
+
+Development and testing
+-----------------------
+
+Setup your python virtual environment for version >=3.10.
+
+.. code-block:: bash
+
+   pip install -e ".[test]"
+   ES_TEST_VERSION=7 pytest guillotina_audit/tests
+   ES_TEST_VERSION=8 pytest guillotina_audit/tests
+   ES_TEST_VERSION=9 pytest guillotina_audit/tests
+
+By default the tests run an Elasticsearch fixture with version 9. Use
+``ES_TEST_VERSION`` to select the Elasticsearch major version. Set it to
+``6``, ``7``, ``8`` or ``9``; the test fixture maps those values to the pinned
+Docker image used by this branch. ``ES_TEST_VERSION=6`` is available for older
+release-line checks, but this branch does not support Elasticsearch 6.
+
+
+Breaking changes in 3.0.0
+-------------------------
+
+- Python 3.10 or newer is required.
+- Guillotina 7.0.0 or newer is required.
+- The Python Elasticsearch client dependency is now 9.x
+  (``elasticsearch[async]>=9.4.0,<10.0.0``).
