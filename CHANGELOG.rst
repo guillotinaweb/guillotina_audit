@@ -1,7 +1,9 @@
 3.0.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Map legacy ``audit.connection_settings.timeout`` to Elasticsearch client 9's
+  ``request_timeout`` option, preserving explicit ``request_timeout`` values.
+  [nilbacardit26]
 
 
 3.0.1 (2026-05-25)
