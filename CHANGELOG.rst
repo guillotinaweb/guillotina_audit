@@ -2,7 +2,7 @@
 -------------------
 
 - Upgrade the Python Elasticsearch client dependency to 9.x
-  (``elasticsearch[async]>=9.4.0,<10.0.0``).
+  (``elasticsearch[async]>=9.0.0,<10.0.0``).
   [nilbacardit26]
 - Require Guillotina 7.0.0 or newer and Python 3.10 or newer.
   This is a breaking dependency change.

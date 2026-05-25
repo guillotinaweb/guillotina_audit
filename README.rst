@@ -44,7 +44,7 @@ Compatibility
 -------------
 
 ``guillotina_audit`` 3.x requires Python 3.10 or newer and Guillotina 7.0.0
-or newer. It uses ``elasticsearch[async]>=9.4.0,<10.0.0`` and supports
+or newer. It uses ``elasticsearch[async]>=9.0.0,<10.0.0`` and supports
 Elasticsearch clusters 7.x, 8.x and 9.x through Elasticsearch compatibility
 headers.
 
@@ -108,4 +108,4 @@ Breaking changes in 3.0.0
 - Python 3.10 or newer is required.
 - Guillotina 7.0.0 or newer is required.
 - The Python Elasticsearch client dependency is now 9.x
-  (``elasticsearch[async]>=9.4.0,<10.0.0``).
+  (``elasticsearch[async]>=9.0.0,<10.0.0``).

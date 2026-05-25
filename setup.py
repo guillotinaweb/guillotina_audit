@@ -41,7 +41,7 @@ setup(
     install_requires=[
         "guillotina>=7.0.0",
         "pydantic",
-        "elasticsearch[async]>=9.4.0,<10.0.0",
+        "elasticsearch[async]>=9.0.0,<10.0.0",
     ],
     tests_require=test_requires,
     extras_require={"test": test_requires},
