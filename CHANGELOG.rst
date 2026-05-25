@@ -1,7 +1,10 @@
 3.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Ensure the audit index exists before background audit writes run, and retry
+  an audit write once if Elasticsearch reports the index is missing while
+  automatic index creation is disabled.
+  [nilbacardit26]
 
 
 3.0.0 (2026-05-25)
