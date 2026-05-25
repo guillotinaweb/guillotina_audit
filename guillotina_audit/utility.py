@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timezone
 from elasticsearch import BadRequestError
+from elasticsearch import NotFoundError
 from elasticsearch.exceptions import RequestError
 from guillotina import app_settings
 from guillotina.component import query_multi_adapter
@@ -42,6 +43,7 @@ class AuditUtility:
         await self.async_es.cluster.put_settings(
             body={"persistent": {"action.auto_create_index": "false"}}
         )
+        await self.create_index()
 
     async def list_indices(self, pattern: str = "*"):
         """
@@ -87,6 +89,8 @@ class AuditUtility:
         logger.info(f"Updating mappings {self.default_mappings()}")
 
     async def create_index(self):
+        if await self.async_es.indices.exists(index=self.index):
+            return
         try:
             await self.async_es.indices.create(
                 index=self.index,
@@ -160,10 +164,15 @@ class AuditUtility:
         }
 
     def log_wildcard(self, payload: AuditDocument):
-        coroutine = self.async_es.index(
-            index=self.index, body=payload.dict(exclude_none=True)
-        )
+        coroutine = self._index_document(payload.dict(exclude_none=True))
         return asyncio.create_task(coroutine)
+
+    async def _index_document(self, document):
+        try:
+            await self.async_es.index(index=self.index, body=document)
+        except NotFoundError:
+            await self.create_index()
+            await self.async_es.index(index=self.index, body=document)
 
     def log_entry(self, obj, event):
         document = {}
@@ -199,7 +208,7 @@ class AuditUtility:
         document["creator"] = user.id
         document["type_name"] = obj.type_name
         document["uuid"] = obj.uuid
-        coroutine = self.async_es.index(index=self.index, body=document)
+        coroutine = self._index_document(document)
         asyncio.create_task(coroutine)
 
     def parse_query(self, context, query):

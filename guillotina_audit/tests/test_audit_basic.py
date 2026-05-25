@@ -13,6 +13,21 @@ import pytest
 pytestmark = pytest.mark.asyncio
 
 
+async def wait_for_audit_hits(guillotina_es, expected, query=""):
+    audit_utility = query_utility(IAuditUtility)
+    path = "/db/guillotina/@audit"
+    if query:
+        path = f"{path}?{query}"
+    for _ in range(30):
+        await audit_utility.async_es.indices.refresh(index=audit_utility.index)
+        resp, status = await guillotina_es("GET", path)
+        assert status == 200
+        if len(resp["hits"]["hits"]) == expected:
+            return resp
+        await asyncio.sleep(0.5)
+    return resp
+
+
 async def test_audit_basic(guillotina_es):
     # Let's check the index has been created
     audit_utility = query_utility(IAuditUtility)
@@ -223,9 +238,7 @@ async def test_permissions_modified_without_indexing(guillotina_es):
         data=json.dumps({"@type": "Item", "id": "foo_item", "title": "Foo Item"}),
     )
     assert status == 201
-    await asyncio.sleep(2)
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
-    assert status == 200
+    resp = await wait_for_audit_hits(guillotina_es, 2)
     assert len(resp["hits"]["hits"]) == 2
 
     response, status = await guillotina_es(
@@ -245,6 +258,8 @@ async def test_permissions_modified_without_indexing(guillotina_es):
     )
     assert status == 200
     await asyncio.sleep(2)
+    audit_utility = query_utility(IAuditUtility)
+    await audit_utility.async_es.indices.refresh(index=audit_utility.index)
     resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
     assert status == 200
     # There should be the same number of documents since indexing_permission_changes is False
@@ -253,10 +268,8 @@ async def test_permissions_modified_without_indexing(guillotina_es):
         "PATCH", "/db/guillotina/foo_item", data=json.dumps({"title": "Another title"})
     )
     assert status == 204
-    await asyncio.sleep(2)
     # Let's make sure ObjectModifiedEvent adds a document
-    resp, status = await guillotina_es("GET", "/db/guillotina/@audit")
-    assert status == 200
+    resp = await wait_for_audit_hits(guillotina_es, 3)
     assert len(resp["hits"]["hits"]) == 3
 
 
