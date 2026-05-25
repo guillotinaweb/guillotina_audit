@@ -1,4 +1,4 @@
-3.0.2 (unreleased)
+3.0.2 (2026-05-25)
 ------------------
 
 - Map legacy ``audit.connection_settings.timeout`` to Elasticsearch client 9's
