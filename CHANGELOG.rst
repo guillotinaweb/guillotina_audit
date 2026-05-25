@@ -1,4 +1,4 @@
-3.0.1 (unreleased)
+3.0.1 (2026-05-25)
 ------------------
 
 - Ensure the audit index exists before background audit writes run, and retry
