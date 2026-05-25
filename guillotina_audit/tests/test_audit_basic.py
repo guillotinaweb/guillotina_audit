@@ -344,12 +344,8 @@ async def test_metadata_field(guillotina_es):
     )
     audit_utility.log_wildcard(payload)
     # Let's check the index has been created
-    resp = await audit_utility.async_es.indices.get_alias()
-    await asyncio.sleep(2)
-    resp, status = await guillotina_es(
-        "GET",
-        "/db/guillotina/@audit?action=CreatingMetadata",
-    )
+    await audit_utility.async_es.indices.get_alias()
+    resp = await wait_for_audit_hits(guillotina_es, 1, query="action=CreatingMetadata")
     assert resp["hits"]["hits"][0]["_source"]["action"] == "CreatingMetadata"
     assert resp["hits"]["hits"][0]["_source"]["metadata"] == {
         "foo_boolean": True,
