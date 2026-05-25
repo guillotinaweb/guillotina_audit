@@ -149,8 +149,8 @@ async def test_audit_wildcard(guillotina_es):
     audit_utility = query_utility(IAuditUtility)
 
     payload = AuditDocument(action="added", type_name="Fullscreen")
-    audit_utility.log_wildcard(payload)
-    await asyncio.sleep(2)
+    await audit_utility.log_wildcard(payload)
+    await audit_utility.async_es.indices.refresh(index=audit_utility.index)
 
     resp, status = await guillotina_es(
         "GET",
@@ -167,8 +167,8 @@ async def test_audit_wildcard(guillotina_es):
         creator="creator",
         uuid="12345",
     )
-    audit_utility.log_wildcard(payload)
-    await asyncio.sleep(2)
+    await audit_utility.log_wildcard(payload)
+    await audit_utility.async_es.indices.refresh(index=audit_utility.index)
 
     resp, status = await guillotina_es(
         "GET",
@@ -178,8 +178,8 @@ async def test_audit_wildcard(guillotina_es):
     assert len(resp["hits"]["hits"]) == 1
 
     payload = AuditDocument(action="CustomAction")
-    audit_utility.log_wildcard(payload)
-    await asyncio.sleep(2)
+    await audit_utility.log_wildcard(payload)
+    await audit_utility.async_es.indices.refresh(index=audit_utility.index)
 
     resp, status = await guillotina_es(
         "GET",
@@ -194,8 +194,8 @@ async def test_audit_wildcard(guillotina_es):
         creation_date="2023-05-12T21:45:32",
         type_name="AnotherFullscreen",
     )
-    audit_utility.log_wildcard(payload)
-    await asyncio.sleep(2)
+    await audit_utility.log_wildcard(payload)
+    await audit_utility.async_es.indices.refresh(index=audit_utility.index)
 
     resp, status = await guillotina_es(
         "GET",

@@ -163,7 +163,7 @@ class AuditUtility:
         coroutine = self.async_es.index(
             index=self.index, body=payload.dict(exclude_none=True)
         )
-        asyncio.create_task(coroutine)
+        return asyncio.create_task(coroutine)
 
     def log_entry(self, obj, event):
         document = {}
